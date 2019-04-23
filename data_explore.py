@@ -21,10 +21,9 @@ class CTImage:
             gender_list = file_subset.Patient_gender.values
             age_list = file_subset.Patient_age.values
         images = []
-        if not self.patient_metadata:
-            for image_name in image_list:
-                image_path = os.path.join(self.image_directory, image_name)
-                images.append(plt.imread(image_path))
+        for image_name in image_list:
+            image_path = os.path.join(self.image_directory, image_name)
+            images.append(plt.imread(image_path))
         if self.patient_metadata:
             return((images, gender_list, age_list))
         else:

@@ -8,8 +8,10 @@ May 2018
 """
 
 """
-A simple demo to load 2D 16-bit slices from DeepLesion and save to 3D nifti volumes.
-The nifti volumes can be viewed in software such as 3D slicer and ITK-SNAP.
+This code is a part of the DeepLesion course project for the Deep Learning course (CS 682), Spring 2019 at John's Hopkins University.
+The project team consists of Aniruddha Tamhane, Parv Saxena and Wei-Lun Huang.
+The course was taught by Matthias Unberath and TA'd by Jie-Ying Wu and Gao Cong.
+The project was sponsored by Google Cloud and Intuitive Surgicals.
 """
 
 
@@ -21,21 +23,23 @@ import csv
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+import shutil
 
 
-dir_in = '/Users/aniruddha/Downloads/CT_files_download/Images_png'
-dir_out = '/Users/aniruddha/Downloads/CT_files_nifti'
-out_fmt = '%s_%03d-%03d.nii.gz'  # format of the nifti file name to output
-# file name of the information file
-info_fn = '/Users/aniruddha/Downloads/DL_info.csv'
+#dir_in = '/Users/aniruddha/Downloads/CT_files_download/Images_png' #Same as unzip_directory
+#dir_out = '/Users/aniruddha/Downloads/CT_files_nifti'              # Directory that will store the 3-channel Nifti images
+out_fmt = '%s_%03d-%03d.nii.gz'                                    # format of the nifti file name to output. Do not change it.
+#info_fn = '/Users/aniruddha/Downloads/DL_info.csv'                 # file name of the information file
 
-
-#dir_in = sys.argv[1]
-#dir_out = sys.argv[2]
-#info_fn = sys.argv[3]
+dir_in = str(sys.argv[1])
+dir_out = str(sys.argv[2])
+info_fn = str(sys.argv[3])
 
 info_file = pd.read_csv(info_fn)
+key_slice_set = set(info_file.File_name.values)
 lesion_mapper = {'bone':1, 'abdomen':2, 'mediastinum': 3,'liver':4, 'lung':5, 'kidney': 6, 'soft_tissue':7, 'pelvis':8}
+relu = lambda x: x if x>0 else 0
+relu_vector = np.vectorize(relu)
 
 def slices2nifti(ims, fn_out, spacing):
     """save 2D slices to 3D nifti file considering the spacing"""
@@ -59,19 +63,46 @@ def load_slices(dir, slice_idxs):
     slice_idxs = np.array(slice_idxs)
     assert np.all(slice_idxs[1:] - slice_idxs[:-1] == 1)
     ims = []
-    key_slice = int((len(slice_idxs)-1)/2)
-    for slice_idx in slice_idxs[key_slice - 1: key_slice + 2]:
+    counter = 0
+    slice_counter = 0
+    #key_slice = int((len(slice_idxs)-1)/2)
+    for slice_idx in slice_idxs:
         fn = '%03d.png' % slice_idx
         path = os.path.join(dir_in, dir, fn)
         dir_path = os.path.join(dir_in, dir)
-        len1 = len(slice_idxs)
-        im = plt.imread(path, -1)  # -1 is needed for 16-bit image
+        img_name = '_'.join([dir, fn])
+        
+        if img_name in key_slice_set:
+            im = cv2.imread(path, -1)  # -1 is needed for 16-bit image
+            assert im is not None, 'error reading %s' % path
+            print ('read', path)
+            im = (im.astype(np.int32) - 32768).astype(np.int16)
+            im = ((im + 1024)/(1024 + 3071))*255
+            im = relu_vector(im)
+            im = im.astype(np.int8)
+            #ims.append((im.astype(np.int32) - 32768).astype(np.int16))
+            ims.append(im)
+            slice_counter = counter
+            counter += 1
+        else:
+            counter += 1
+    for slice_idx in [slice_idxs[slice_counter - 1], slice_idxs[slice_counter + 1]]:
+        fn = '%03d.png' % slice_idx
+        path = os.path.join(dir_in, dir, fn)
+        dir_path = os.path.join(dir_in, dir)
+        img_name = '_'.join([dir, fn])
+        counter = 0
+        slice_counter = 0
+        im = cv2.imread(path, -1)  # -1 is needed for 16-bit image
         assert im is not None, 'error reading %s' % path
-        print ('read', path)
-        #im = (im.astype(np.int32) - 32768).astype(np.int16)
-        #im = ((im - im.min())/(im.max() - im.min()))*255
+        print('read', path)
+        im = (im.astype(np.int32) - 32768).astype(np.int16)
+        im = ((im + 1024)/(1024 + 3071))*255
+        im = relu_vector(im)
+        im = im.astype(np.int8)
         #ims.append((im.astype(np.int32) - 32768).astype(np.int16))
         ims.append(im)
+
     return (ims)
 
 
@@ -110,6 +141,7 @@ if __name__ == '__main__':
             i1 = np.where(np.all(idxs == idxs1, axis=1))[0]
             spacings1 = spacings[i1[0]]
 
+            folder_path = os.path.join(dir_in, dir1)
             fns = os.listdir(os.path.join(dir_in, dir1))
             slices = [int(d[:-4]) for d in fns if d.endswith('.png')]
             slices.sort()
@@ -130,3 +162,6 @@ if __name__ == '__main__':
                 #key_slice = 
                 fn_out = out_fmt % (dir1, group[0], group[-1])
                 slices2nifti(ims, fn_out, spacings1)
+            
+            shutil.rmtree(folder_path)      #Code to delete the unzipped directory once it has been used to convert the files to nifti
+            

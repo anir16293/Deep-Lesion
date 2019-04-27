@@ -8,7 +8,7 @@ import os
 download_path = sys.argv[1]        # Folder containing the unzipped images
 save_path = sys.argv[2]            # Folder to save images
 
-dl_info_csv = sys.argv[3]          # The DL_info.csv file path
+dl_info_csv = pd.read_csv(sys.argv[3])          # The DL_info.csv file path
 key_slices = dl_info_csv.File_name.values
 
 if not os.path.isdir(save_path):

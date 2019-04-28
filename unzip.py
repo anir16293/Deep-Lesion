@@ -5,6 +5,9 @@ The course was taught by Matthias Unberath and TA'd by Jie-Ying Wu and Gao Cong.
 The project was sponsored by Google Cloud and Intuitive Surgicals.
 """
 
+"""Command: python3 Deep-Lesion/unzip.py /media/parv/Seagate\ Backup\ Plus\ Drive/DeepL_Dataset/ /media/parv/Seagate\ Backup\ Plus\ Drive/DeepL_Dataset/Extracted\ /
+"""
+
 import zipfile
 import os
 import sys
@@ -15,7 +18,7 @@ unzip_directory = str(sys.argv[2])     # Directory to unzip the zipped image fil
 for idx in range(1, 20):
     full_fn = os.path.join(download_directory,'Images_png_%02d.zip' % (idx+1))
     zip_ref = zipfile.ZipFile(full_fn)
-    zip_ref.extractall(unzip_directory)
+    zip_ref.extractall(unzip_directory+'/'+str(idx+1))
     zip_ref.close()
     #os.remove(full_fn)
-    print('Unzipped directory '+ str(idx))
+    print('Unzipped directory '+ str(idx+1))

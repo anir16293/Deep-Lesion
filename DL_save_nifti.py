@@ -22,8 +22,8 @@ import cv2
 import csv
 import sys
 import pandas as pd
-import matplotlib.pyplot as plt
-import shutil
+#import matplotlib.pyplot as plt
+#import shutil
 
 
 #dir_in = '/Users/aniruddha/Downloads/CT_files_download/Images_png' #Same as unzip_directory
@@ -31,6 +31,9 @@ import shutil
 out_fmt = '%s_%03d-%03d.nii.gz'                                    # format of the nifti file name to output. Do not change it.
 #info_fn = '/Users/aniruddha/Downloads/DL_info.csv'                 # file name of the information file
 
+"""
+Command:  python3 Deep-Lesion/DL_save_nifti.py /media/parv/Seagate\ Backup\ Plus\ Drive/DeepL_Dataset/Extracted\ /55/Images_png/ /media/parv/Seagate\ Backup\ Plus\ Drive/DeepL_Dataset/Final_nifti/ Deep-Lesion/DL_info.csv 
+"""
 dir_in = str(sys.argv[1])
 dir_out = str(sys.argv[2])
 info_fn = str(sys.argv[3])
@@ -53,6 +56,7 @@ def slices2nifti(ims, fn_out, spacing):
     # the transformation matrix suitable for 3D slicer and ITK-SNAP
     T = np.array([[0, -spacing[1], 0, 0], [-spacing[0], 0, 0, 0], [0, 0, -spacing[2], 0], [0, 0, 0, 1]])
     img = nib.Nifti1Image(V, T)
+    print(img.shape)
     path_out = os.path.join(dir_out, fn_out)
     nib.save(img, path_out)
     print (fn_out, 'saved')
@@ -86,7 +90,8 @@ def load_slices(dir, slice_idxs):
             counter += 1
         else:
             counter += 1
-    for slice_idx in [slice_idxs[slice_counter - 1], slice_idxs[slice_counter + 1]]:
+    for slice_idx in [slice_idxs[slice_counter - 1],
+                      slice_idxs[slice_counter + 1]]:
         fn = '%03d.png' % slice_idx
         path = os.path.join(dir_in, dir, fn)
         dir_path = os.path.join(dir_in, dir)
@@ -163,5 +168,5 @@ if __name__ == '__main__':
                 fn_out = out_fmt % (dir1, group[0], group[-1])
                 slices2nifti(ims, fn_out, spacings1)
             
-            shutil.rmtree(folder_path)      #Code to delete the unzipped directory once it has been used to convert the files to nifti
+            # shutil.rmtree(folder_path)      #Code to delete the unzipped directory once it has been used to convert the files to nifti
             

@@ -9,7 +9,7 @@ import os
 Command: python3 Deep-Lesion/preprocess.py /media/parv/Seagate\ Backup\ Plus\ Drive/DeepL_Dataset/Extracted\ /1/Images_png/ /home/parv/DL/DL\ Project/Final_Images Deep-Lesion/DL_info.csv
 """
 
-download_path = sys.argv[1]        # Folder containing the unzipped images
+download_path =  sys.argv[1]        # Folder containing the unzipped images
 save_path = sys.argv[2]            # Folder to save images
 
 dl_info_csv = pd.read_csv(sys.argv[3])          # The DL_info.csv file path
@@ -32,8 +32,8 @@ def preprocess_image(im):
 for _slice in key_slices:
     slice_name = _slice.split('_')
     image_number = slice_name[-1]
-    previous = '.'.join([str(int(image_number.split('.')[0]) - 1), 'png'])
-    _next = '.'.join([str(int(image_number.split('.')[0]) + 1), 'png'])
+    previous = '.'.join([str(int(image_number.split('.')[0]) - 1).zfill(3), 'png'])
+    _next = '.'.join([str(int(image_number.split('.')[0]) + 1).zfill(3), 'png'])
     folder_number = slice_name[0:-1]
     path = '_'.join(folder_number)
     final_path = os.path.join(download_path, path, image_number)
@@ -44,22 +44,28 @@ for _slice in key_slices:
         im1 = cv2.imread(final_path, -1)
         im1 = preprocess_image(im1)
     except AttributeError:
-        print(final_path + 'not available')
+        continue
+        #print(final_path + ' not available')
 
     try:
         imp = cv2.imread(previous_path, -1)
         imp = preprocess_image(imp)
     except AttributeError:
+        print('Error')
         imp = im1
 
     try:
         imn = cv2.imread(next_path, -1)
         imn = preprocess_image(imn)
     except AttributeError:
+        print('Error')
         imn = im1
+
     new_img = cv2.merge([imp, im1, imn])
     save_img_name = '_'.join([path, image_number])
     save_image_path = os.path.join(save_path, save_img_name)
-    print(save_image_path)
+    print('File:')
+    print(final_path)
+    print(previous_path)
+    print(next_path)
     cv2.imwrite(save_image_path, new_img)
-

@@ -1,9 +1,13 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import sys
 import pandas as pd
 import cv2
 import os
+
+"""
+Command: python3 Deep-Lesion/preprocess.py /media/parv/Seagate\ Backup\ Plus\ Drive/DeepL_Dataset/Extracted\ /1/Images_png/ /home/parv/DL/DL\ Project/Final_Images Deep-Lesion/DL_info.csv
+"""
 
 download_path = sys.argv[1]        # Folder containing the unzipped images
 save_path = sys.argv[2]            # Folder to save images

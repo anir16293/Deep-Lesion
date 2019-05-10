@@ -306,6 +306,7 @@ class IOULoss(nn.modules.loss._Loss):
         loss = (area_intersection + 1e-4)/(area1 + area2 - area_intersection + 1e-4)
         loss = self.relu(loss)
         loss = torch.mean(loss, dim = 0)
+        loss = 1 - loss
         return(loss)
 
 

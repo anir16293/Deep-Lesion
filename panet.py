@@ -296,9 +296,11 @@ class IOULoss(nn.modules.loss._Loss):
         super(IOULoss, self).__init__(size_average=size_average, reduce=reduce, reduction=reduction)
     
     def forward(self, bbox, bbox_pred):
-        area1 = (bbox[2] - bbox[0])*(bbox[3] - bbox[1])
-        area2 = (bbox_pred[2] - bbox_pred[0])*(bbox_pred[3] - bbox_pred[1])
-        area_intersection = (torch.min(bbox[2], bbox_pred[2]) - torch.max(bbox[0], bbox_pred[0]))*(torch.min(bbox[3], bbox_pred[3]) - torch.max(bbox[1], bbox_pred[1]))
+        area1 = (bbox[:, 2] - bbox[:, 0])*(bbox[:, 3] - bbox[:, 1])
+        area2 = (bbox_pred[:, 2] - bbox_pred[:, 0]) * \
+            (bbox_pred[:, 3] - bbox_pred[:, 1])
+        area_intersection = (torch.min(bbox[:, 2], bbox_pred[:, 2]) - torch.max(bbox[:, 0], bbox_pred[:, 0]))*(
+            torch.min(bbox[:, 3], bbox_pred[:, 3]) - torch.max(bbox[:, 1], bbox_pred[:, 1]))
         return(area_intersection/(area1 + area2 - area_intersection))
 
 
@@ -312,8 +314,10 @@ if __name__ == '__main__':
     #output = predicter(random_img)
     #print(output)
 
-    bbox_pred = torch.tensor([368, 269, 429, 340], dtype = torch.float32)
-    bbox = torch.tensor([302, 274, 319, 295], dtype = torch.float32)
+    bbox_pred = torch.tensor(
+        [[368, 269, 429, 340], [368, 269, 429, 340]], dtype=torch.float32)
+    bbox = torch.tensor(
+        [[302, 274, 319, 295], [302, 274, 319, 295]], dtype=torch.float32)
 
     loss = IOULoss()
     

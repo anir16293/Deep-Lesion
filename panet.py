@@ -294,6 +294,7 @@ class predictClass(nn.Module):
 class IOULoss(nn.modules.loss._Loss):
     def __init__(self, size_average=None, reduce=None, reduction='mean'):
         super(IOULoss, self).__init__(size_average=size_average, reduce=reduce, reduction=reduction)
+        self.relu = nn.ReLU()
     
     def forward(self, bbox, bbox_pred):
         area1 = (bbox[:, 0, 2] - bbox[:, 0, 0])*(bbox[:, 0, 3] - bbox[:, 0, 1])
@@ -302,7 +303,8 @@ class IOULoss(nn.modules.loss._Loss):
         area_intersection = (torch.min(bbox[:, 0, 2], bbox_pred[:, 0, 2]) - torch.max(bbox[:, 0, 0], bbox_pred[:, 0, 0]))*(
             torch.min(bbox[:, 0, 3], bbox_pred[:, 0, 3]) - torch.max(bbox[:, 0, 1], bbox_pred[:, 0, 1]))
 
-        loss = area_intersection/(area1 + area2 - area_intersection)
+        loss = (area_intersection + 1e-4)/(area1 + area2 - area_intersection + 1e-4)
+        loss = self.relu(loss)
         loss = torch.mean(loss, dim = 0)
         return(loss)
 

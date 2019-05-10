@@ -127,7 +127,7 @@ class PanNet(nn.Module):
         out_final = self.fc2(out_final)
         out_final = self.fc3(out_final)
 
-        out_final = 255*self.sigmoid(out_final)
+        out_final = 511*self.sigmoid(out_final)
 
         return(out_final)
 
@@ -269,7 +269,7 @@ class EncoderNet(nn.Module):
         out_final = self.fc2(out_final)
         out_final = self.fc3(out_final)
 
-        out_final = 255*self.sigmoid(out_final)
+        out_final = 511*self.sigmoid(out_final)
 
         return((out_final, out_auto))
 

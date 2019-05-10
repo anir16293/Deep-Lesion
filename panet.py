@@ -301,7 +301,10 @@ class IOULoss(nn.modules.loss._Loss):
             (bbox_pred[:, 3] - bbox_pred[:, 1])
         area_intersection = (torch.min(bbox[:, 2], bbox_pred[:, 2]) - torch.max(bbox[:, 0], bbox_pred[:, 0]))*(
             torch.min(bbox[:, 3], bbox_pred[:, 3]) - torch.max(bbox[:, 1], bbox_pred[:, 1]))
-        return(area_intersection/(area1 + area2 - area_intersection))
+
+        loss = area_intersection/(area1 + area2 - area_intersection)
+        loss = torch.mean(loss, dim = 0)
+        return(loss)
 
 
 

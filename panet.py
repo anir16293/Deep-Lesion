@@ -128,10 +128,10 @@ class PanNet(nn.Module):
         out_final = self.fc2(out_final)
         out_final = self.relu(out_final)
         out_final = self.fc3(out_final)
-        #out_final = self.relu(out_final)
+        out_final = self.relu(out_final)
         #out_final = 511*self.sigmoid(out_final)
-        out_final[:,0,2] = out_final[:,0,0] + torch.exp(out_final[:,0,2])
-        out_final[:, 0, 3] = out_final[:, 0, 1] + torch.exp(out_final[:, 0, 3])
+        #out_final[:,0,2] = out_final[:,0,0] + torch.exp(out_final[:,0,2])
+        #out_final[:, 0, 3] = out_final[:, 0, 1] + torch.exp(out_final[:, 0, 3])
         return(out_final)
 
 class autoencoder_improved(nn.Module):
@@ -273,6 +273,7 @@ class EncoderNet(nn.Module):
         out_final = self.fc2(out_final)
         out_final = self.relu(out_final)
         out_final = self.fc3(out_final)
+        out_final = self.relu(out_final)
 
         #out_final = 511*self.sigmoid(out_final)
 

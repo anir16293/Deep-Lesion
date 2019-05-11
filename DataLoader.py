@@ -18,7 +18,7 @@ from torch import nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from torchvision.datasets import FashionMNIST
+#from torchvision.datasets import FashionMNIST
 import matplotlib.pyplot as plt
 import numpy as np
 import torch.nn.functional as F
@@ -34,7 +34,7 @@ import pandas as pd
 
 ##### For all paths
 csv_path = "./DL_info.csv"
-Image_slices_dir = "/home/parv/Dropbox/Final_Images_2/"
+Image_slices_dir = "/home/parv/Final_Images_2/"
 
 
 # In[7]:

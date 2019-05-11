@@ -124,11 +124,14 @@ class PanNet(nn.Module):
         
         #Box regression network
         out_final = self.fc1(out_final)
+        out_final = self.relu(out_final)
         out_final = self.fc2(out_final)
+        out_final = self.relu(out_final)
         out_final = self.fc3(out_final)
-
+        #out_final = self.relu(out_final)
         #out_final = 511*self.sigmoid(out_final)
-
+        out_final[:,0,2] = out_final[:,0,0] + torch.exp(out_final[:,0,2])
+        out_final[:, 0, 3] = out_final[:, 0, 1] + torch.exp(out_final[:, 0, 3])
         return(out_final)
 
 class autoencoder_improved(nn.Module):
@@ -266,7 +269,9 @@ class EncoderNet(nn.Module):
         
         #Box regression network
         out_final = self.fc1(out_final)
+        out_final = self.relu(out_final)
         out_final = self.fc2(out_final)
+        out_final = self.relu(out_final)
         out_final = self.fc3(out_final)
 
         #out_final = 511*self.sigmoid(out_final)
@@ -279,7 +284,7 @@ class predictClass(nn.Module):
         self.encoder = nn.Sequential(nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1), nn.BatchNorm2d(32), nn.ReLU(), nn.MaxPool2d(kernel_size=2, padding=0), nn.Conv2d(
             in_channels=32, out_channels=16, kernel_size=3, stride=1, padding=1), nn.BatchNorm2d(16), nn.ReLU(), nn.MaxPool2d(kernel_size=2, padding=0), nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=1, padding=1), nn.BatchNorm2d(8), nn.ReLU())
 
-        self.classifier = nn.Sequential(nn.Linear(in_features = 128*128*8, out_features = 1024), nn.Linear(in_features = 1024, out_features = 16), nn.Linear(in_features = 16, out_features = 8))
+        self.classifier = nn.Sequential(nn.Linear(in_features = 128*128*8, out_features = 1024), nn.ReLU(), nn.Linear(in_features = 1024, out_features = 16),nn.ReLU(), nn.Linear(in_features = 16, out_features = 8))
 
         self.softmax = nn.Softmax(dim = 2)
     
@@ -313,17 +318,17 @@ class IOULoss(nn.modules.loss._Loss):
 
 
 if __name__ == '__main__':
-    #random_img = torch.rand(( 1, 3, 512, 512))
-    #encodernet = EncoderNet()
+    random_img = torch.rand(( 2, 3, 512, 512))
+    encodernet = PanNet()
     #predicter = predictClass()
-    #output = encodernet(random_img)
+    output = encodernet(random_img)
     #output = predicter(random_img)
-    #print(output)
-
+    print(output)
+'''
     bbox_pred = torch.tensor(
-        [[368, 269, 429, 340], [368, 269, 429, 340]], dtype=torch.float32)
+        [[176, 103, 123, 201]], dtype=torch.float32)
     bbox = torch.tensor(
-        [[302, 274, 319, 295], [302, 274, 319, 295]], dtype=torch.float32)
+        [[367, 296, 389, 317]], dtype=torch.float32)
 
     bbox_pred = bbox_pred.view(-1, 1, 4)
     bbox = bbox.view(-1, 1, 4)
@@ -331,3 +336,4 @@ if __name__ == '__main__':
     
     print(loss(bbox = bbox, bbox_pred= bbox_pred))
 
+'''

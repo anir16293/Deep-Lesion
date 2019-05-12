@@ -1,6 +1,6 @@
-##########
-This script is used to separate out the dataset into different folders by classes
-##########
+
+####This script is used to separate out the dataset into different folders by classes
+
 import os
 
 import numpy as np
@@ -10,11 +10,11 @@ import shutil
 
 ##### For all paths
 csv_path = "./DL_info.csv"
-Image_slices_dir = "/home/weilunhuang/course/DL/project/faster-rcnn-pytorch/data/JPEGImages"
-Anno_slices_dir = "/home/weilunhuang/course/DL/project/faster-rcnn-pytorch/data/Annotations"
-ImageSet_slices_dir = "/home/weilunhuang/course/DL/project/faster-rcnn-pytorch/data/ImageSets/Main"
+Image_slices_dir = "/home/weilunhuang/faster-rcnn-pytorch/VOC2007/JPEGImages"
+Anno_slices_dir = "/home/weilunhuang/faster-rcnn-pytorch/VOC2007/Annotations"
+ImageSet_slices_dir = "/home/weilunhuang/faster-rcnn-pytorch/VOC2007/ImageSets/Main"
 
-root_dir="/home/weilunhuang/course/DL/project/Data"
+root_dir="/home/weilunhuang/Data"
 
 ###create dict for 8 classes
 dest_dir={};
@@ -39,8 +39,8 @@ for i in range(1,9):
 for i in range(1,9):
     for j in range(len(df_dic[i].index)):
         #debug
-        if j>0:
-            break;
+        #if j>0:
+        #    break;
         #jpeg
         file_name = os.path.join(Image_slices_dir, df_dic[i].iloc[j]['File_name'])        
         print (file_name)
@@ -56,8 +56,8 @@ for i in range(1,9):
 ###separate imagesets, for test dataset
 for i in range(1,9):
     #debug
-    if i>1:
-        break;
+    #if i>1:
+    #    break;
     path=dest_dir[i]['imagesets']+'/test.txt'
     file = open(path,"w") ;
     for j in range(len(df_dic[i].index)):

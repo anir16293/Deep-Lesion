@@ -139,19 +139,27 @@ class ToTensor(object):
 # In[5]:
 
 
-img_transform = transforms.Compose([
-    Rescale(512),
-    ToTensor(),
-])
 
 
 # dataset_type : 1 for train, 2 for validation, 3 for test
 class ImageDataset(dataset.Dataset):
-    def __init__ (self, root_dir, dataset_type, csv_file=csv_path, transform=img_transform):
+    def __init__ (self, root_dir, dataset_type, csv_file=csv_path, output_image_size = 512, df_passed=None):
         self.root_dir = root_dir
         self.csv_path = csv_path
-        self.df = df[df['Train_Val_Test']==dataset_type]
-        self.imf_transform = img_transform
+        if df_passed:
+            self.df = df_passed
+        else:
+            self.df = df[df['Train_Val_Test']==dataset_type]
+        Rescale_size = output_image_size
+        img_transform = transforms.Compose([
+            Rescale(Rescale_size),
+            ToTensor(),
+        ])
+        self.img_transform = img_transform
+        self.op_size = output_image_size
+
+        Rescale_size = output_image_size
+
     def __len__(self):
         return len(self.df.index)
     def __getitem__(self, idx):
@@ -180,7 +188,7 @@ class ImageDataset(dataset.Dataset):
         #print (lesions.shape)
         sample = {'image':image, 'lesions':lesions, 'labels':np.ones(lesions.shape[0])}
         # print (type(lesions))
-        sample = img_transform(sample)
+        sample = self.img_transform(sample)
         sample['Filename'] = self.df.iloc[idx]['File_name']
         return sample
 

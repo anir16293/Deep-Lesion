@@ -3,6 +3,7 @@ import torch
 from torch import nn
 import sys
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
 
 
 class ChannelPool(nn.MaxPool1d):
@@ -319,22 +320,26 @@ class IOULoss(nn.modules.loss._Loss):
 
 
 if __name__ == '__main__':
+    '''
     random_img = torch.rand(( 2, 3, 512, 512))
     encodernet = PanNet()
     #predicter = predictClass()
     output = encodernet(random_img)
     #output = predicter(random_img)
     print(output)
-'''
+
     bbox_pred = torch.tensor(
-        [[176, 103, 123, 201]], dtype=torch.float32)
+        [[248, 274, 283, 307]], dtype=torch.float32)
     bbox = torch.tensor(
-        [[367, 296, 389, 317]], dtype=torch.float32)
+        [[293, 264, 283, 292]], dtype=torch.float32)
 
     bbox_pred = bbox_pred.view(-1, 1, 4)
     bbox = bbox.view(-1, 1, 4)
     loss = IOULoss()
     
     print(loss(bbox = bbox, bbox_pred= bbox_pred))
+    '''
+    img = plt.imread('/Users/aniruddha/Downloads/Validation/000002_01_01_162.png')
+    plt.imshow(img[:,:,0])
+    plt.show()
 
-'''
